@@ -12,18 +12,35 @@ public class MovementController : MonoBehaviour
     // reference character rigidbody2D component
     Rigidbody2D rb2D;
 
+    // holds reference to animator component
+    Animator animator;
+
+    // used to refer to animation parameter for updates
+    string animationState = "AnimationState";
+
+    // enumerated constants match animation values
+    enum CharStates
+    {
+        walkRight = 1,
+        walkDown = 2,
+        walkLeft = 3, 
+        walkUp = 4,
+        idleDown = 5
+    }
 
     // Start is called before the first frame update
     private void Start()
     {
         //gets references to game object component at game startup
         rb2D = GetComponent<Rigidbody2D>();
+        animator = GetComponent<animator>();
     }
 
     // Update is called once per frame
     private void Update()
     {
-        
+        // update animation state machine
+        UpdateState();
     }
 
     // called at fixed intervals by Unity engine
@@ -48,5 +65,21 @@ public class MovementController : MonoBehaviour
 
         // set RigidBody2D velocity and move it
         rb2D.velocity = movement * movementSpeed;
+    }
+
+    private void UpdateState()
+    {
+        // determine GetAxisRaw returns -1, 0 or 1, and which axis
+        // change the state of animation parameter
+        if (movement.x > 0) // 1
+            animator.SetInteger(animationState, (int)CharStates.walkRight);
+        else if (movement.x < 0) // -1
+            animator.SetInteger(animationState, (int)CharStates.walkLeft);
+        else if (movement.y > 0) // 1
+            animator.SetInteger(animationState, (int)CharStates.walkUp);
+        else if (movement.y < 0) // -1 
+            animator.SetInteger(animationState, (int)CharStates.walkDown);
+        else
+            animator.SetInteger(animationState, (int)CharStates.idleDown);
     }
 }
